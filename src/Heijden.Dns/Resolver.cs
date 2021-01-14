@@ -4,11 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Net.Sockets;
-
 using System.Net.NetworkInformation;
-
-using System.Diagnostics;
-using System.Runtime.Remoting.Messaging;
 
 
 /*
@@ -679,23 +675,8 @@ namespace Heijden.DNS
 		/// <returns>An System.IAsyncResult instance that references the asynchronous request.</returns>
 		public IAsyncResult BeginGetHostAddresses(string hostNameOrAddress, AsyncCallback requestCallback, object stateObject)
 		{
-			GetHostAddressesDelegate g = new GetHostAddressesDelegate(GetHostAddresses);
+			GetHostAddressesDelegate g = GetHostAddresses;
 			return g.BeginInvoke(hostNameOrAddress, requestCallback, stateObject);
-		}
-
-		/// <summary>
-		///		Ends an asynchronous request for DNS information.
-		/// </summary>
-		/// <param name="AsyncResult">
-		///		An System.IAsyncResult instance returned by a call to the Heijden.Dns.Resolver.BeginGetHostAddresses(System.String,System.AsyncCallback,System.Object)
-		///		method.
-		/// </param>
-		/// <returns></returns>
-		public IPAddress[] EndGetHostAddresses(IAsyncResult AsyncResult)
-		{
-			AsyncResult aResult = (AsyncResult)AsyncResult;
-			GetHostAddressesDelegate g = (GetHostAddressesDelegate)aResult.AsyncDelegate;
-			return g.EndInvoke(AsyncResult);
 		}
 
 		/// <summary>
@@ -747,21 +728,6 @@ namespace Heijden.DNS
 		}
 
 		/// <summary>
-		///		Ends an asynchronous request for DNS information.
-		/// </summary>
-		/// <param name="AsyncResult">
-		///		An System.IAsyncResult instance returned by a call to an 
-		///		Heijden.Dns.Resolver.BeginGetHostByName method.
-		/// </param>
-		/// <returns></returns>
-		public IPHostEntry EndGetHostByName(IAsyncResult AsyncResult)
-		{
-			AsyncResult aResult = (AsyncResult)AsyncResult;
-			GetHostByNameDelegate g = (GetHostByNameDelegate)aResult.AsyncDelegate;
-			return g.EndInvoke(AsyncResult);
-		}
-
-		/// <summary>
 		///		Resolves a host name or IP address to an System.Net.IPHostEntry instance.
 		/// </summary>
 		/// <param name="hostName">A DNS-style host name or IP address.</param>
@@ -794,20 +760,6 @@ namespace Heijden.DNS
 			return g.BeginInvoke(hostName, requestCallback, stateObject);
 		}
 
-		/// <summary>
-		///		Ends an asynchronous request for DNS information.
-		/// </summary>
-		/// <param name="AsyncResult">
-		///		An System.IAsyncResult instance that is returned by a call to the System.Net.Dns.BeginResolve(System.String,System.AsyncCallback,System.Object)
-		///     method.
-		/// </param>
-		/// <returns>An System.Net.IPHostEntry object that contains DNS information about a host.</returns>
-		public IPHostEntry EndResolve(IAsyncResult AsyncResult)
-		{
-			AsyncResult aResult = (AsyncResult)AsyncResult;
-			ResolveDelegate g = (ResolveDelegate)aResult.AsyncDelegate;
-			return g.EndInvoke(AsyncResult);
-		}
 		#endregion
 
 		/// <summary>
@@ -883,33 +835,6 @@ namespace Heijden.DNS
 		{
 			GetHostEntryViaIPDelegate g = new GetHostEntryViaIPDelegate(GetHostEntry);
 			return g.BeginInvoke(ip, requestCallback, stateObject);
-		}
-
-		/// <summary>
-		/// Ends an asynchronous request for DNS information.
-		/// </summary>
-		/// <param name="AsyncResult">
-		///		An System.IAsyncResult instance returned by a call to an 
-		///		Overload:Heijden.Dns.Resolver.BeginGetHostEntry method.
-		/// </param>
-		/// <returns>
-		///		An System.Net.IPHostEntry instance that contains address information about
-		///		the host. 
-		///</returns>
-		public IPHostEntry EndGetHostEntry(IAsyncResult AsyncResult)
-		{
-			AsyncResult aResult = (AsyncResult)AsyncResult;
-			if (aResult.AsyncDelegate is GetHostEntryDelegate)
-			{
-				GetHostEntryDelegate g = (GetHostEntryDelegate)aResult.AsyncDelegate;
-				return g.EndInvoke(AsyncResult);
-			}
-			if (aResult.AsyncDelegate is GetHostEntryViaIPDelegate)
-			{
-				GetHostEntryViaIPDelegate g = (GetHostEntryViaIPDelegate)aResult.AsyncDelegate;
-				return g.EndInvoke(AsyncResult);
-			}
-			return null;
 		}
 
 		private enum RRRecordStatus
