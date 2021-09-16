@@ -1,0 +1,31 @@
+name: Build and push to nuget feed
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+      working-directory: src
+    - name: Build
+      run: dotnet build -c Release --no-restore
+      working-directory: src
+    - name: Pack
+      run: dotnet pack -c Release
+      working-directory: src
+    - name: Publish Nuget to GitHub registry
+      run: dotnet nuget push src/Heijden.Dns/bin/Release/*.nupkg -k ${GITHUB_TOKEN} -s https://nuget.pkg.github.com/safervpn/index.json --skip-duplicate 
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
